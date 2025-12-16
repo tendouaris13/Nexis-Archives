@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FKS-NEXT 核心系统配置参考</title>
+    <style>
+        /* 基础样式 - 适用于所有设备 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "PingFang SC", "Microsoft YaHei";
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        h2 {
+            color: #343a40;
+            margin-top: 30px;
+            border-left: 5px solid #ffc107;
+            padding-left: 10px;
+            font-size: 1.5em;
+        }
+        h3 {
+            color: #495057;
+            margin-top: 20px;
+            font-size: 1.25em;
+        }
+        
+        /* 针对 ** 强调的样式优化 */
+        strong {
+            font-weight: 900; /* 使用更粗的字重 */
+            color: #d9534f; /* 赋予强调词红色，使其更突出 */
+        }
+
+        /* 表格容器 - 允许在小屏幕上横向滚动 */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* 修复 "MD" 问题：为关键概念增加背景高亮，提升识别度 */
+        .key-concept {
+            font-weight: 700;
+            background-color: #e0f7fa;
+            color: #00796b;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        
+        td code {
+            font-weight: 600;
+        }
+
+        code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #bd4147;
+        }
+        pre {
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            color: #343a40;
+            border-left: 4px solid #007bff;
+            word-break: break-all;
+        }
+        .note {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #ffeeba;
+        }
+
+        /* 媒体查询 - 优化移动端 (屏幕宽度小于 768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 95%;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.6em;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+            }
+            h2 {
+                font-size: 1.3em;
+                margin-top: 25px;
+            }
+            h3 {
+                font-size: 1.1em;
+            }
+            table {
+                min-width: 500px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⚙️ FKS-NEXT 核心系统配置参考 (V2.0)</h1>
+    <p>这份文档提供了 FKS-NEXT 配置文件编写所需的<strong>指令、参数格式和执行规范</strong>。</p>
+
+    <h2>I. 📑 执行规范 (Essentials)</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>规范项目</th>
+                    <th>规则描述</th>
+                    <th>示例</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">指令间隔</span></td>
+                    <td>多个指令间使用<strong>换行</strong>或<strong>分号</strong> <code>;</code> 间隔。</td>
+                    <td><code>setlogdefault; setprotect(...)</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">注释支持</span></td>
+                    <td>支持使用 C 风格注释：<strong>单行注释</strong> <code>//</code> 和 <strong>多行注释</strong> <code>/*...*/</code>。</td>
+                    <td><code>// 这是注释</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">大小写敏感</span></td>
+                    <td><strong>文件位置类型</strong> (<code>DATA</code>, <code>EXTERNAL</code>) <strong>必须大写</strong>。</td>
+                    <td><code>DATA</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">大小写不敏感</span></td>
+                    <td><strong>指令名称</strong> (<code>setprotect</code>) 和 <strong>布尔值</strong> (<code>true</code>/<code>false</code>) 不区分大小写。</td>
+                    <td><code>setlogdefault</code> 或 <code>TRUE</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">参数分隔符</span></td>
+                    <td>所有参数必须使用<strong>逗号</strong> <code>,</code> 分隔。</td>
+                    <td><code>(DATA, true, "cache", ".*")</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">字符串值</span></td>
+                    <td>字符串值（如正则表达式）必须使用<strong>双引号</strong> <code>"</code> 包裹。</td>
+                    <td><code>"cache"</code>, <code>".*\\.log"</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">日志优先级</span></td>
+                    <td>遵循文件中<strong>最后出现</strong>的日志设置命令 (<code>setlog...</code>)。默认：<code>setlogdefault</code>。</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>II. ⚡ 指令表 (Command List)</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>分类</th>
+                    <th>指令名称 (小写)</th>
+                    <th>最小参数数</th>
+                    <th>功能描述 (核心行为)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">日志</span></td>
+                    <td><code>setlogdetail</code></td>
+                    <td>0</td>
+                    <td>启用详细日志输出。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>setlogdefault</code></td>
+                    <td>0</td>
+                    <td>启用默认日志输出（仅输出操作结果）。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>setlogsilent</code></td>
+                    <td>0</td>
+                    <td>启用静默日志输出（仅输出启动/停止信息）。</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">保护</span></td>
+                    <td><code>setprotect</code></td>
+                    <td>3</td>
+                    <td>将匹配到的文件设置为<strong>完全保护</strong>，防止被 <code>simplekill</code> 或受保护的 <code>trial</code> 删除/清空。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>setprotectexist</code></td>
+                    <td>3</td>
+                    <td>将匹配到的文件设置为<strong>存在保护</strong>。在删除或清空操作时，该文件内容会被覆盖清空，文件自身不会被删除。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>setprotectdir</code></td>
+                    <td>3</td>
+                    <td>保护匹配到的<strong>目录</strong>。该目录及其内部所有内容都将免于删除或清空。</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">清理</span></td>
+                    <td><code>simplekill</code></td>
+                    <td>1</td>
+                    <td>在 <code>DATA</code> 目录下，对文件执行<strong>受保护协议约束</strong>的递归删除操作。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>trial</code></td>
+                    <td>4</td>
+                    <td>在指定路径下执行<strong>删除</strong>操作。保护约束由 <code>IsProtected</code> 参数决定。</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><code>trialdata</code></td>
+                    <td>4</td>
+                    <td>在指定路径下执行<strong>清空</strong>（覆盖内容）操作。保护约束由 <code>IsProtected</code> 参数决定。</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>III. 📂 文件位置类型 (Location Type)</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>类型</th>
+                    <th>规范</th>
+                    <th>配置基准 (对应的根目录)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">DATA</span></td>
+                    <td><strong>严格大写</strong></td>
+                    <td>应用内部数据目录</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">EXTERNAL</span></td>
+                    <td><strong>严格大写</strong></td>
+                    <td>外部存储应用目录</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>IV. 🛠️ 参数配置格式</h2>
+
+    <h3>A. 文件保护类：<code>setprotect</code> / <code>setprotectexist</code> 格式</h3>
+    <pre><code>&lt;命令&gt;(&lt;Location&gt;, &lt;Recursive&gt;, [&lt;DirRegEx_1&gt;, ..., &lt;DirRegEx_N&gt;,] &lt;FileRegEx&gt;)</code></pre>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>描述</th>
+                    <th>规范</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">Location</span></td>
+                    <td>文件操作的<strong>根目录</strong>。</td>
+                    <td><code>DATA</code> 或 <code>EXTERNAL</code> <strong>(大写)</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">Recursive</span></td>
+                    <td>是否对匹配到的子目录<strong>递归</strong>应用文件保护规则。</td>
+                    <td><code>true</code> 或 <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">DirRegEx_N</span></td>
+                    <td>路径中各级目录名的<strong>正则表达式</strong>（可选，可省略）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">FileRegEx</span></td>
+                    <td>匹配<strong>文件名</strong>的正则表达式（必填）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><strong>示例</strong></td>
+                    <td colspan="2"><code>setprotect(DATA, true, "cache", ".*\\.log")</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>B. 目录保护类：<code>setprotectdir</code> 格式</h3>
+    <pre><code>setprotectdir(&lt;Location&gt;, &lt;Recursive&gt;, [&lt;DirRegEx_1&gt;, ..., &lt;DirRegEx_N&gt;,] &lt;FinalDirRegEx&gt;)</code></pre>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>描述</th>
+                    <th>规范</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">Location</span></td>
+                    <td>目录操作的<strong>根目录</strong>。</td>
+                    <td><code>DATA</code> 或 <code>EXTERNAL</code> <strong>(大写)</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">Recursive</span></td>
+                    <td>路径匹配后，是否对子目录<strong>递归查找</strong>并保护。</td>
+                    <td><code>true</code> 或 <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">DirRegEx_N</span></td>
+                    <td>匹配目标目录<strong>所在路径</strong>中各级目录名的正则表达式（可选）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">FinalDirRegEx</span></td>
+                    <td>匹配<strong>目标目录自身</strong>的正则表达式（必填）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><strong>示例</strong></td>
+                    <td colspan="2"><code>setprotectdir(EXTERNAL, false, "temp", "fonts")</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>C. 清理操作类：<code>trial</code> / <code>trialdata</code> 格式</h3>
+    <pre><code>&lt;命令&gt;(&lt;Location&gt;, &lt;Recursive&gt;, &lt;IsProtected&gt;, [&lt;DirRegEx_1&gt;, ..., &lt;DirRegEx_N&gt;,] &lt;FileRegEx&gt;)</code></pre>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>描述</th>
+                    <th>规范</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">Location</span></td>
+                    <td>文件操作的<strong>根目录</strong>。</td>
+                    <td><code>DATA</code> 或 <code>EXTERNAL</code> <strong>(大写)</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">Recursive</span></td>
+                    <td>是否在匹配到的目录内<strong>递归查找</strong>并执行操作。</td>
+                    <td><code>true</code> 或 <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">IsProtected</span></td>
+                    <td>操作是否<strong>受</strong> <code>setprotect</code> 规则约束。</td>
+                    <td><code>true</code> 或 <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">DirRegEx_N</span></td>
+                    <td>匹配目标目录所在路径中各级目录名的<strong>正则表达式</strong>（可选）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><span class="key-concept">FileRegEx</span></td>
+                    <td>匹配<strong>文件名</strong>的正则表达式（必填）。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><strong>示例</strong></td>
+                    <td colspan="2"><code>trialdata(EXTERNAL, true, false, "cache", "temp.*")</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>D. 简易清理类：<code>simplekill</code> 格式</h3>
+    <pre><code>simplekill(&lt;FileRegEx&gt;)</code></pre>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>描述</th>
+                    <th>规范</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="key-concept">FileRegEx</span></td>
+                    <td>匹配<strong>文件名</strong>的正则表达式。</td>
+                    <td>字符串</td>
+                </tr>
+                <tr>
+                    <td><strong>默认执行</strong></td>
+                    <td colspan="2"><strong>位置：</strong> <code>DATA</code>； <strong>模式：</strong> 递归删除； <strong>受保护：</strong> <code>true</code></td>
+                </tr>
+                <tr>
+                    <td><strong>示例</strong></td>
+                    <td colspan="2"><code>simplekill("temp_file.*")</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
